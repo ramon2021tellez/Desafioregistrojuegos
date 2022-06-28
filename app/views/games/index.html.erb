@@ -1,14 +1,52 @@
-<p style="color: green"><%= notice %></p>
+<p id="notice"><%= notice %></p>
 
 <h1>Games</h1>
 
-<div id="games">
-  <% @games.each do |game| %>
-    <%= render game %>
-    <p>
-      <%= link_to "Show this game", game %>
-    </p>
-  <% end %>
-</div>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Rules</th>
+      <th>Cover Image</th>
+      <th>Pieces</th>
+      <th>Rules in PDF</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
 
-<%= link_to "New game", new_game_path %>
+  <tbody>
+    <% @games.each do |game| %>
+      <tr>
+        <td><%= game.name %></td>
+        <td><%= game.rules %></td>
+        <% if game.cover_image.attached? %>
+          <td>
+            <%= link_to rails_blob_path(game.cover_image, disposition:'attachment') do%>
+              <%= image_tag game.cover_image.variant(resize: "50x50") %>
+            <% end %>
+          </td>
+        <% end %>
+        <% if game.pieces.attached? %>
+          <td>
+            <% game.pieces.each do |img| %>
+              <%= link_to rails_blob_path(img, disposition:'attachment') do %>
+                <%= image_tag img.variant(resize: "100x100") %>
+              <% end %>
+            <% end %>
+          </td>
+        <% end %>
+        <% if game.rules_in_pdf.attached? %>
+          <td><%= link_to "Download PDF", rails_blob_path(game.rules_in_pdf, disposition:'attachment') %></td>
+        <% end  %>
+        
+        <td><%= link_to 'Show', game %></td>
+        <td><%= link_to 'Edit', edit_game_path(game) %></td>
+        <td><%= link_to 'Destroy', game, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Game', new_game_path %>
